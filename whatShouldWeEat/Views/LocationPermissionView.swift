@@ -7,6 +7,7 @@ struct LocationPermissionView: View {
     let onZipCodeEntered: (String) -> Void
     
     @State private var zipCode = ""
+    @State private var locationManager = CLLocationManager()
     @FocusState private var isZipCodeFieldFocused: Bool
     
     var body: some View {
@@ -62,20 +63,15 @@ struct LocationPermissionView: View {
                         .focused($isZipCodeFieldFocused)
                         .onSubmit {
                             if !zipCode.isEmpty {
-                                print("🔧 Go button tapped with zip code: \(zipCode)")
-                                print("🔧 Calling onZipCodeEntered callback")
                                 onZipCodeEntered(zipCode)
-                                print("🔧 onZipCodeEntered callback completed")
                             }
                         }
                         .onTapGesture {
-                            print("🔧 TextField tapped - setting focus to true")
                             DispatchQueue.main.async {
                                 isZipCodeFieldFocused = true
                             }
                         }
                         .onAppear {
-                            print("🔧 TextField appeared - setting focus")
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 isZipCodeFieldFocused = true
                             }
@@ -93,12 +89,7 @@ struct LocationPermissionView: View {
                     
                     Button(action: {
                         if !zipCode.isEmpty {
-                            print("🔧 Go button tapped with zip code: \(zipCode)")
-                            print("🔧 Calling onZipCodeEntered callback")
                             onZipCodeEntered(zipCode)
-                            print("🔧 onZipCodeEntered callback completed")
-                        } else {
-                            print("🔧 Go button tapped but zip code is empty")
                         }
                     }) {
                         Text("Go")
@@ -120,26 +111,20 @@ struct LocationPermissionView: View {
     }
     
     private func requestLocationPermission() {
-        let locationManager = CLLocationManager()
-        
-        // Check current status first
+        // Use the @State locationManager so it survives this function call
         switch locationManager.authorizationStatus {
         case .denied, .restricted:
             // Permission was denied, open Settings
-            print("🔐 Permission denied - opening Settings")
             if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsUrl)
             }
         case .notDetermined:
             // Request permission
-            print("🔐 Requesting permission...")
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:
             // Already authorized
-            print("🔐 Already authorized")
             onLocationGranted()
         @unknown default:
-            print("❓ Unknown authorization status")
             break
         }
     }

@@ -81,21 +81,8 @@ struct RestaurantSwipeView: View {
             }
         }
         .task {
+            viewModel.mealPreferences = preferences
             await viewModel.setupLocationAndFetchRestaurants()
-        }
-    }
-    
-    // MARK: - Swipe Handling
-    
-    private func handleSwipe(_ value: DragGesture.Value) {
-        let threshold: CGFloat = 100
-        
-        if value.translation.width > threshold {
-            // Swipe right - like
-            viewModel.swipeRight()
-        } else if value.translation.width < -threshold {
-            // Swipe left - dislike
-            viewModel.swipeLeft()
         }
     }
 }

@@ -14,7 +14,8 @@ class MockRestaurantService: RestaurantServiceProtocol {
         errorMessage = nil
         
         // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            guard let self else { return }
             self.restaurants = self.generateMockRestaurants(near: location, excludedCuisines: excludedCuisines)
             self.isLoading = false
         }

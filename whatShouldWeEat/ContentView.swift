@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var authManager: AuthenticationManager
     @StateObject private var appViewModel: AppViewModel
+    @State private var sessionId = UUID().uuidString
     
     init() {
         let sharedAuthManager = AuthenticationManager()
@@ -36,12 +37,10 @@ struct ContentView: View {
                 PreferencesSetupView(
                     preferences: $appViewModel.mealPreferences,
                     onContinue: {
+                        appViewModel.completeOnboarding()
                         appViewModel.currentView = .swiping
                     }
                 )
-                .onAppear {
-                    print("🎯 PreferencesSetupView appeared")
-                }
                 
             case .socialMode:
                 SocialModeSelectionView(
@@ -58,7 +57,7 @@ struct ContentView: View {
                 
             case .invitation:
                 SessionInvitationView(
-                    sessionId: UUID().uuidString,
+                    sessionId: sessionId,
                     hostName: "You",
                     onInviteSent: {
                         appViewModel.currentView = .swiping

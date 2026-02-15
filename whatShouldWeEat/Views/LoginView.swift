@@ -2,7 +2,7 @@ import SwiftUI
 import GoogleSignIn
 
 struct LoginView: View {
-    @StateObject private var authManager = AuthenticationManager()
+    @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingError = false
     
     var body: some View {
@@ -122,4 +122,5 @@ struct LoginView: View {
 
 #Preview {
     LoginView()
+        .environmentObject(AuthenticationManager())
 } 

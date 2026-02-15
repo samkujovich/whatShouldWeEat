@@ -11,11 +11,11 @@
 			<string>REVERSED_CLIENT_ID</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.YOUR_CLIENT_ID</string>
+				<string>com.googleusercontent.apps.480189775377-lsf1d1nj5l6pl44nt21e3huf39b8jqhc</string>
 			</array>
 		</dict>
 	</array>
 	<key>GIDClientID</key>
-	<string>YOUR_CLIENT_ID.apps.googleusercontent.com</string>
+	<string>480189775377-lsf1d1nj5l6pl44nt21e3huf39b8jqhc.apps.googleusercontent.com</string>
 </dict>
 </plist>

@@ -8,6 +8,7 @@ struct Restaurant: Identifiable, Codable, Equatable {
     let phoneNumber: String?
     let website: String?
     let rating: Double?
+    let userRatingsTotal: Int?
     let priceLevel: Int?
     let cuisineTypes: [String]
     let popularDishes: [String]
@@ -43,6 +44,7 @@ struct Restaurant: Identifiable, Codable, Equatable {
         case phoneNumber = "formatted_phone_number"
         case website
         case rating
+        case userRatingsTotal = "user_ratings_total"
         case priceLevel = "price_level"
         case cuisineTypes = "types"
         case popularDishes
@@ -60,6 +62,7 @@ struct Restaurant: Identifiable, Codable, Equatable {
         phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
         website = try container.decodeIfPresent(String.self, forKey: .website)
         rating = try container.decodeIfPresent(Double.self, forKey: .rating)
+        userRatingsTotal = try container.decodeIfPresent(Int.self, forKey: .userRatingsTotal)
         priceLevel = try container.decodeIfPresent(Int.self, forKey: .priceLevel)
         cuisineTypes = try container.decodeIfPresent([String].self, forKey: .cuisineTypes) ?? []
         popularDishes = try container.decodeIfPresent([String].self, forKey: .popularDishes) ?? []
@@ -79,13 +82,14 @@ struct Restaurant: Identifiable, Codable, Equatable {
     }
     
     // Custom initializer for creating restaurants with known data
-    init(id: String, name: String, address: String, phoneNumber: String?, website: String?, rating: Double?, priceLevel: Int?, cuisineTypes: [String], popularDishes: [String], photos: [String], openingHours: OpeningHours?, location: CLLocationCoordinate2D, distance: Double?) {
+    init(id: String, name: String, address: String, phoneNumber: String?, website: String?, rating: Double?, userRatingsTotal: Int? = nil, priceLevel: Int?, cuisineTypes: [String], popularDishes: [String], photos: [String], openingHours: OpeningHours?, location: CLLocationCoordinate2D, distance: Double?) {
         self.id = id
         self.name = name
         self.address = address
         self.phoneNumber = phoneNumber
         self.website = website
         self.rating = rating
+        self.userRatingsTotal = userRatingsTotal
         self.priceLevel = priceLevel
         self.cuisineTypes = cuisineTypes
         self.popularDishes = popularDishes
@@ -103,6 +107,7 @@ struct Restaurant: Identifiable, Codable, Equatable {
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
         try container.encodeIfPresent(website, forKey: .website)
         try container.encodeIfPresent(rating, forKey: .rating)
+        try container.encodeIfPresent(userRatingsTotal, forKey: .userRatingsTotal)
         try container.encodeIfPresent(priceLevel, forKey: .priceLevel)
         try container.encode(cuisineTypes, forKey: .cuisineTypes)
         try container.encode(popularDishes, forKey: .popularDishes)

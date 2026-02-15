@@ -23,7 +23,7 @@ struct ModernSwipeInterface: View {
     }
     
     private var progress: Double {
-        guard restaurants.count > 0 else { return 0 }
+        guard restaurants.count > 1 else { return 0 }
         return Double(currentIndex) / Double(restaurants.count - 1)
     }
     

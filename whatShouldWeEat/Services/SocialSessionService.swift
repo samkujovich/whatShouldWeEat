@@ -12,7 +12,6 @@ class SocialSessionService: ObservableObject {
     // MARK: - Session Management
     
     func createSession(hostUserId: String, hostName: String, sessionName: String, preferences: MealPreferences, location: CLLocationCoordinate2D) {
-        print("🔄 Creating new social session")
         isLoading = true
         errorMessage = nil
         
@@ -29,12 +28,10 @@ class SocialSessionService: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.currentSession = session
             self.isLoading = false
-            print("✅ Social session created: \(session.id)")
         }
     }
     
     func joinSession(sessionId: String, userId: String, userName: String) {
-        print("🔄 Joining session: \(sessionId)")
         isLoading = true
         errorMessage = nil
         
@@ -50,13 +47,16 @@ class SocialSessionService: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.currentSession = session
             self.isLoading = false
-            print("✅ User \(userName) joined session")
         }
     }
     
+    func stopRealTimeSync() {
+        cancellables.removeAll()
+    }
+
     func leaveSession(userId: String) {
-        print("🔄 User \(userId) leaving session")
-        
+        stopRealTimeSync()
+
         guard var session = currentSession else { return }
         
         session.participants.removeAll { $0.userId == userId }
@@ -64,10 +64,8 @@ class SocialSessionService: ObservableObject {
         if session.participants.isEmpty {
             // Session is empty, delete it
             currentSession = nil
-            print("🗑️ Session deleted - no participants remaining")
         } else {
             currentSession = session
-            print("✅ User left session")
         }
     }
     
@@ -78,7 +76,6 @@ class SocialSessionService: ObservableObject {
         
         session.restaurants = restaurants
         currentSession = session
-        print("🍽️ Added \(restaurants.count) restaurants to session")
     }
     
     func likeRestaurant(restaurantId: String, userId: String) {
@@ -88,7 +85,6 @@ class SocialSessionService: ObservableObject {
             session.participants[participantIndex].likedRestaurantIds.insert(restaurantId)
             session.participants[participantIndex].dislikedRestaurantIds.remove(restaurantId)
             currentSession = session
-            print("👍 User \(userId) liked restaurant \(restaurantId)")
         }
     }
     
@@ -99,7 +95,6 @@ class SocialSessionService: ObservableObject {
             session.participants[participantIndex].dislikedRestaurantIds.insert(restaurantId)
             session.participants[participantIndex].likedRestaurantIds.remove(restaurantId)
             currentSession = session
-            print("👎 User \(userId) disliked restaurant \(restaurantId)")
         }
     }
     
@@ -109,14 +104,13 @@ class SocialSessionService: ObservableObject {
         guard var session = currentSession else { return }
         session.status = .active
         currentSession = session
-        print("🚀 Session started")
     }
     
     func completeSession() {
+        stopRealTimeSync()
         guard var session = currentSession else { return }
         session.status = .completed
         currentSession = session
-        print("✅ Session completed")
     }
     
     // MARK: - Analytics
@@ -149,29 +143,16 @@ class SocialSessionService: ObservableObject {
     // MARK: - Push Notifications (Simulated)
     
     func sendInvitation(to userId: String, sessionId: String, hostName: String) {
-        print("📱 Sending invitation to user \(userId) for session \(sessionId)")
-        
         // In a real app, this would send a push notification
-        // For now, we'll simulate the notification
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            print("📨 Push notification sent to \(userId): '\(hostName) invited you to join their dining session!'")
-        }
     }
-    
+
     func sendSessionUpdate(to userId: String, message: String) {
-        print("📱 Sending session update to user \(userId): \(message)")
-        
         // In a real app, this would send a push notification
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            print("📨 Push notification sent to \(userId): '\(message)'")
-        }
     }
     
     // MARK: - Real-time Sync (Simulated)
     
     func startRealTimeSync() {
-        print("🔄 Starting real-time synchronization")
-        
         // In a real app, this would establish WebSocket connection or use Firebase
         // For now, we'll simulate periodic updates
         Timer.publish(every: 5.0, on: .main, in: .common)
@@ -183,15 +164,9 @@ class SocialSessionService: ObservableObject {
     }
     
     private func syncSessionUpdates() {
-        guard let session = currentSession else { return }
-        
-        // Simulate receiving updates from other participants
-        print("🔄 Syncing session updates...")
-        
+        guard currentSession != nil else { return }
+
         // In a real app, this would fetch updates from the backend
-        // For now, we'll just log the sync
-        let progress = getSessionProgress()
-        print("📊 Session progress: \(progress.participantsCompleted)/\(progress.totalParticipants) participants completed, \(progress.matchedRestaurants) matched restaurants")
     }
     
     // MARK: - Session Cleanup
@@ -199,7 +174,6 @@ class SocialSessionService: ObservableObject {
     func cleanupExpiredSessions() {
         guard let session = currentSession, session.isExpired else { return }
         
-        print("⏰ Session expired, cleaning up...")
         currentSession = nil
     }
 } 
