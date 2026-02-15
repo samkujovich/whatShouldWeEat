@@ -140,6 +140,8 @@ struct AppConstants {
         static let navyCard = Color(red: 0.1, green: 0.15, blue: 0.3)
         static let navyButton = Color(red: 0.15, green: 0.2, blue: 0.4)
         static let navyHighlight = Color(red: 0.2, green: 0.3, blue: 0.6)
+        static let navySubtitle = Color(red: 0.3, green: 0.4, blue: 0.5)
+        static let navyUnselected = Color(red: 0.95, green: 0.97, blue: 1.0)
     }
     
     struct Spacing {

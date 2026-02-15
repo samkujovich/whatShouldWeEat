@@ -27,7 +27,7 @@ struct LocationPermissionView: View {
             Text("We need your location to show you the best restaurants in your area. Your location is only used to find nearby restaurants and is never shared.")
                 .font(.body)
                 .multilineTextAlignment(.center)
-                .foregroundColor(Color(red: 0.3, green: 0.4, blue: 0.5))
+                .foregroundColor(AppConstants.Colors.navySubtitle)
                 .padding(.horizontal)
             
             // Permission button
@@ -53,7 +53,7 @@ struct LocationPermissionView: View {
             VStack(spacing: 8) {
                 Text("Or enter a zip code:")
                     .font(.caption)
-                    .foregroundColor(Color(red: 0.3, green: 0.4, blue: 0.5))
+                    .foregroundColor(AppConstants.Colors.navySubtitle)
                 
                 HStack {
                     TextField("Enter zip code", text: $zipCode)

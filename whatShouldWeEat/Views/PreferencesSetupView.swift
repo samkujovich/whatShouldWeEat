@@ -47,7 +47,7 @@ struct PreferencesSetupView: View {
             
             Text("Tell us your preferences to get personalized restaurant recommendations")
                 .font(.subheadline)
-                .foregroundColor(Color(red: 0.3, green: 0.4, blue: 0.5))
+                .foregroundColor(AppConstants.Colors.navySubtitle)
         }
         .padding(.horizontal)
     }
@@ -105,7 +105,7 @@ struct PreferencesSetupView: View {
                             Text("20 miles")
                         }
                         .font(.caption)
-                        .foregroundColor(Color(red: 0.3, green: 0.4, blue: 0.5))
+                        .foregroundColor(AppConstants.Colors.navySubtitle)
                         
                         Slider(value: $maxDistance, in: 0.5...20, step: 0.5)
                             .accentColor(AppConstants.Colors.navyPrimary)
@@ -190,7 +190,7 @@ struct DeliveryModeButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(isSelected ? AppConstants.Colors.navyPrimary : Color(red: 0.95, green: 0.97, blue: 1.0))
+            .background(isSelected ? AppConstants.Colors.navyPrimary : AppConstants.Colors.navyUnselected)
             .foregroundColor(isSelected ? .white : AppConstants.Colors.navyPrimary)
             .cornerRadius(12)
         }
@@ -217,7 +217,7 @@ struct PriceRangeButton: View {
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(isSelected ? AppConstants.Colors.navyPrimary : Color(red: 0.95, green: 0.97, blue: 1.0))
+                .background(isSelected ? AppConstants.Colors.navyPrimary : AppConstants.Colors.navyUnselected)
                 .foregroundColor(isSelected ? .white : AppConstants.Colors.navyPrimary)
                 .cornerRadius(8)
         }
