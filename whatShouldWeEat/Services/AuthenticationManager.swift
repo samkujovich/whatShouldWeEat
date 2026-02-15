@@ -152,7 +152,7 @@ class AuthenticationManager: ObservableObject {
     func signOut() async {
         do {
             try Auth.auth().signOut()
-            try GIDSignIn.sharedInstance.signOut()
+            GIDSignIn.sharedInstance.signOut()
 
             isAuthenticated = false
             currentUser = nil

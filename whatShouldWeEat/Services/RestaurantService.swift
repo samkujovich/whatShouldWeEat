@@ -10,6 +10,10 @@ class RestaurantService: RestaurantServiceProtocol {
     @Published var isLoading = false
     @Published var errorMessage: String?
 
+    var restaurantsPublisher: Published<[Restaurant]>.Publisher { $restaurants }
+    var isLoadingPublisher: Published<Bool>.Publisher { $isLoading }
+    var errorMessagePublisher: Published<String?>.Publisher { $errorMessage }
+
     private var cancellables = Set<AnyCancellable>()
 
     func fetchRestaurants(near location: CLLocationCoordinate2D, radius: Double, excludedCuisines: [String] = []) {
@@ -96,7 +100,7 @@ class RestaurantService: RestaurantServiceProtocol {
 
                     // Calculate distances for each restaurant
                     let restaurantsWithDistance = filteredRestaurants.map { restaurant in
-                        let distance = self?.calculateDistance(from: location, to: restaurant.location)
+                        let distance: Double? = AppUtilities.calculateDistance(from: location, to: restaurant.location)
                         return Restaurant(
                             id: restaurant.id,
                             name: restaurant.name,
@@ -134,16 +138,6 @@ class RestaurantService: RestaurantServiceProtocol {
             .decode(type: PlaceDetailsResponse.self, decoder: JSONDecoder())
             .map(\.result)
             .eraseToAnyPublisher()
-    }
-
-    private func calculateDistance(from userLocation: CLLocationCoordinate2D, to restaurantLocation: CLLocationCoordinate2D) -> Double {
-        let userCLLocation = CLLocation(latitude: userLocation.latitude, longitude: userLocation.longitude)
-        let restaurantCLLocation = CLLocation(latitude: restaurantLocation.latitude, longitude: restaurantLocation.longitude)
-
-        let distanceInMeters = userCLLocation.distance(from: restaurantCLLocation)
-        let distanceInMiles = distanceInMeters / 1609.34 // Convert meters to miles
-
-        return distanceInMiles
     }
 }
 

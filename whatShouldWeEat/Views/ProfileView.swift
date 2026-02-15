@@ -4,12 +4,13 @@ struct ProfileView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingSignOutAlert = false
     @State private var showingEditProfile = false
-    
+    var onGoBack: (() -> Void)? = nil
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // Background
-                Color(red: 0.05, green: 0.1, blue: 0.2)
+                AppConstants.Colors.navyBackground
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -33,7 +34,20 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
-            .navigationBarColor(Color(red: 0.05, green: 0.1, blue: 0.2))
+            .navigationBarColor(AppConstants.Colors.navyBackground)
+            .toolbar {
+                if let onGoBack = onGoBack {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: onGoBack) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                Text("Back")
+                            }
+                            .foregroundColor(.white)
+                        }
+                    }
+                }
+            }
         }
         .alert("Sign Out", isPresented: $showingSignOutAlert) {
             Button("Cancel", role: .cancel) { }
@@ -107,7 +121,7 @@ struct ProfileView: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(red: 0.2, green: 0.3, blue: 0.6))
+                    .fill(AppConstants.Colors.navyHighlight)
             )
         }
         .padding(.vertical, 20)
@@ -153,7 +167,7 @@ struct ProfileView: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                .fill(AppConstants.Colors.navyCard)
         )
     }
     
@@ -189,7 +203,7 @@ struct ProfileView: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                .fill(AppConstants.Colors.navyCard)
         )
     }
     
@@ -232,7 +246,7 @@ struct ProfileView: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                .fill(AppConstants.Colors.navyCard)
         )
     }
     
@@ -272,7 +286,7 @@ struct StatCard: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(red: 0.15, green: 0.2, blue: 0.4))
+                .fill(AppConstants.Colors.navyButton)
         )
     }
 }

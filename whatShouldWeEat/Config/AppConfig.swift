@@ -12,12 +12,12 @@ struct AppConfig {
     static let appVersion = "1.0.0"
     
     // Default Preferences
-    static let defaultMaxDistance: Double = 5.0
+    static let defaultMaxDistance: Double = 20.0 // miles
     static let defaultDeliveryMode: DeliveryMode = .dineIn
     
     // API Configuration
     static let maxRestaurantsPerRequest = 20
-    static let defaultSearchRadius: Double = 5000 // meters
+    static let defaultSearchRadius: Double = 20.0 * 1609.34 // meters (for Google Places API)
     
     // UI Configuration
     static let cardStackSize = 3

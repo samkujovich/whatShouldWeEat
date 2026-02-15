@@ -25,10 +25,10 @@ struct EditProfileView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // Background
-                Color(red: 0.05, green: 0.1, blue: 0.2)
+                AppConstants.Colors.navyBackground
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -49,7 +49,7 @@ struct EditProfileView: View {
             }
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.large)
-            .navigationBarColor(Color(red: 0.05, green: 0.1, blue: 0.2))
+            .navigationBarColor(AppConstants.Colors.navyBackground)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
@@ -141,7 +141,7 @@ struct EditProfileView: View {
                         .padding(.vertical, 12)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                                .fill(AppConstants.Colors.navyCard)
                         )
                 }
             }
@@ -149,7 +149,7 @@ struct EditProfileView: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                .fill(AppConstants.Colors.navyCard)
         )
     }
     
@@ -179,7 +179,7 @@ struct EditProfileView: View {
                     }
                     
                     Slider(value: $defaultDriveRadius, in: 1...50, step: 1)
-                        .accentColor(Color(red: 0.2, green: 0.3, blue: 0.6))
+                        .accentColor(AppConstants.Colors.navyHighlight)
                 }
                 
                 // Cuisine Restrictions
@@ -196,7 +196,7 @@ struct EditProfileView: View {
                             showingCuisinePicker = true
                         }
                         .font(.subheadline)
-                        .foregroundColor(Color(red: 0.2, green: 0.3, blue: 0.6))
+                        .foregroundColor(AppConstants.Colors.navyHighlight)
                     }
                     
                     if cuisineRestrictions.isEmpty {
@@ -207,7 +207,7 @@ struct EditProfileView: View {
                             .padding(.vertical, 12)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                                    .fill(AppConstants.Colors.navyCard)
                             )
                     } else {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
@@ -219,7 +219,7 @@ struct EditProfileView: View {
                                     .padding(.vertical, 6)
                                     .background(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color(red: 0.2, green: 0.3, blue: 0.6))
+                                            .fill(AppConstants.Colors.navyHighlight)
                                     )
                             }
                         }
@@ -240,7 +240,7 @@ struct EditProfileView: View {
                             showingMealTimePicker = true
                         }
                         .font(.subheadline)
-                        .foregroundColor(Color(red: 0.2, green: 0.3, blue: 0.6))
+                        .foregroundColor(AppConstants.Colors.navyHighlight)
                     }
                     
                     if preferredMealTimes.isEmpty {
@@ -251,7 +251,7 @@ struct EditProfileView: View {
                             .padding(.vertical, 12)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                                    .fill(AppConstants.Colors.navyCard)
                             )
                     } else {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
@@ -263,7 +263,7 @@ struct EditProfileView: View {
                                     .padding(.vertical, 6)
                                     .background(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color(red: 0.2, green: 0.3, blue: 0.6))
+                                            .fill(AppConstants.Colors.navyHighlight)
                                     )
                             }
                         }
@@ -274,7 +274,7 @@ struct EditProfileView: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                .fill(AppConstants.Colors.navyCard)
         )
     }
     
@@ -321,7 +321,7 @@ struct CustomTextFieldStyle: TextFieldStyle {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(red: 0.1, green: 0.15, blue: 0.3))
+                    .fill(AppConstants.Colors.navyCard)
             )
     }
 }
@@ -336,9 +336,9 @@ struct CuisineRestrictionsPicker: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-                Color(red: 0.05, green: 0.1, blue: 0.2)
+                AppConstants.Colors.navyBackground
                     .ignoresSafeArea()
                 
                 VStack(spacing: 20) {
@@ -368,7 +368,7 @@ struct CuisineRestrictionsPicker: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarColor(Color(red: 0.05, green: 0.1, blue: 0.2))
+            .navigationBarColor(AppConstants.Colors.navyBackground)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
@@ -396,7 +396,7 @@ struct CuisineToggleButton: View {
                 .padding(.vertical, 12)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(isSelected ? Color(red: 0.2, green: 0.3, blue: 0.6) : Color(red: 0.1, green: 0.15, blue: 0.3))
+                        .fill(isSelected ? AppConstants.Colors.navyHighlight : AppConstants.Colors.navyCard)
                 )
         }
     }
@@ -409,9 +409,9 @@ struct MealTimePicker: View {
     private let availableTimes = ["breakfast", "lunch", "dinner", "late-night"]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-                Color(red: 0.05, green: 0.1, blue: 0.2)
+                AppConstants.Colors.navyBackground
                     .ignoresSafeArea()
                 
                 VStack(spacing: 20) {
@@ -441,7 +441,7 @@ struct MealTimePicker: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarColor(Color(red: 0.05, green: 0.1, blue: 0.2))
+            .navigationBarColor(AppConstants.Colors.navyBackground)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
@@ -479,7 +479,7 @@ struct MealTimeToggleButton: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color(red: 0.2, green: 0.3, blue: 0.6) : Color(red: 0.1, green: 0.15, blue: 0.3))
+                    .fill(isSelected ? AppConstants.Colors.navyHighlight : AppConstants.Colors.navyCard)
             )
         }
     }

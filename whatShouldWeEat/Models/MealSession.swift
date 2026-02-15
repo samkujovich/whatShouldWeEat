@@ -8,7 +8,7 @@ struct MealSessionCriteria: Codable {
     var excludedCuisines: [String]
     var location: CLLocationCoordinate2D?
     
-    init(driveRadius: Double = 10.0, deliveryOnly: Bool = false, excludedCuisines: [String] = [], location: CLLocationCoordinate2D? = nil) {
+    init(driveRadius: Double = AppConfig.defaultMaxDistance, deliveryOnly: Bool = false, excludedCuisines: [String] = [], location: CLLocationCoordinate2D? = nil) {
         self.driveRadius = driveRadius
         self.deliveryOnly = deliveryOnly
         self.excludedCuisines = excludedCuisines

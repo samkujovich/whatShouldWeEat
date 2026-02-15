@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var authManager: AuthenticationManager
     @StateObject private var appViewModel: AppViewModel
-    @State private var sessionId = UUID().uuidString
     
     init() {
         let sharedAuthManager = AuthenticationManager()
@@ -29,9 +28,14 @@ struct ContentView: View {
                     .environmentObject(authManager)
                 
             case .welcome:
-                WelcomeView(onStart: {
-                    appViewModel.currentView = .preferences
-                })
+                WelcomeView(
+                    onStart: {
+                        appViewModel.currentView = .preferences
+                    },
+                    onProfileTapped: {
+                        appViewModel.currentView = .profile
+                    }
+                )
                 
             case .preferences:
                 PreferencesSetupView(
@@ -42,31 +46,6 @@ struct ContentView: View {
                     }
                 )
                 
-            case .socialMode:
-                SocialModeSelectionView(
-                    onCreateSession: {
-                        appViewModel.currentView = .invitation
-                    },
-                    onJoinSession: {
-                        appViewModel.currentView = .invitation
-                    },
-                    onSoloMode: {
-                        appViewModel.currentView = .preferences
-                    }
-                )
-                
-            case .invitation:
-                SessionInvitationView(
-                    sessionId: sessionId,
-                    hostName: "You",
-                    onInviteSent: {
-                        appViewModel.currentView = .swiping
-                    },
-                    onSkip: {
-                        appViewModel.currentView = .preferences
-                    }
-                )
-                
             case .swiping:
                 RestaurantSwipeView(
                     preferences: appViewModel.mealPreferences,
@@ -74,6 +53,12 @@ struct ContentView: View {
                         appViewModel.currentView = .preferences
                     }
                 )
+
+            case .profile:
+                ProfileView(onGoBack: {
+                    appViewModel.currentView = .welcome
+                })
+                .environmentObject(authManager)
             }
         }
         .alert("Error", isPresented: $authManager.showError) {
@@ -89,11 +74,26 @@ struct ContentView: View {
 // MARK: - Welcome View
 struct WelcomeView: View {
     let onStart: () -> Void
-    
+    var onProfileTapped: (() -> Void)? = nil
+
     var body: some View {
         VStack(spacing: 40) {
+            // Profile button in top-right
+            HStack {
+                Spacer()
+                if let onProfileTapped = onProfileTapped {
+                    Button(action: onProfileTapped) {
+                        Image(systemName: "person.crop.circle")
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.top, 12)
+                }
+            }
+
             Spacer()
-            
+
             // App Icon/Logo
             VStack(spacing: 20) {
                 Image(systemName: "fork.knife.circle.fill")

@@ -3,7 +3,7 @@ import SwiftUI
 struct PreferencesSetupView: View {
     @Binding var preferences: MealPreferences
     @State private var selectedDeliveryMode: DeliveryMode = .dineIn
-    @State private var maxDistance: Double = 5.0
+    @State private var maxDistance: Double = AppConfig.defaultMaxDistance
     @State private var excludedCuisines: Set<String> = []
     @State private var selectedPriceRange: PriceRange? = nil
     
@@ -20,7 +20,7 @@ struct PreferencesSetupView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
@@ -47,7 +47,7 @@ struct PreferencesSetupView: View {
             
             Text("Tell us your preferences to get personalized restaurant recommendations")
                 .font(.subheadline)
-                .foregroundColor(Color(red: 0.3, green: 0.4, blue: 0.5))
+                .foregroundColor(AppConstants.Colors.navySubtitle)
         }
         .padding(.horizontal)
     }
@@ -62,7 +62,7 @@ struct PreferencesSetupView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color(red: 0.1, green: 0.2, blue: 0.4))
+                .background(AppConstants.Colors.navyPrimary)
                 .cornerRadius(12)
         }
         .padding(.horizontal)
@@ -105,10 +105,10 @@ struct PreferencesSetupView: View {
                             Text("20 miles")
                         }
                         .font(.caption)
-                        .foregroundColor(Color(red: 0.3, green: 0.4, blue: 0.5))
+                        .foregroundColor(AppConstants.Colors.navySubtitle)
                         
                         Slider(value: $maxDistance, in: 0.5...20, step: 0.5)
-                            .accentColor(Color(red: 0.1, green: 0.2, blue: 0.4))
+                            .accentColor(AppConstants.Colors.navyPrimary)
                     }
                 }
                 .padding(.horizontal)
@@ -190,8 +190,8 @@ struct DeliveryModeButton: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(isSelected ? Color(red: 0.1, green: 0.2, blue: 0.4) : Color(red: 0.95, green: 0.97, blue: 1.0))
-            .foregroundColor(isSelected ? .white : Color(red: 0.1, green: 0.2, blue: 0.4))
+            .background(isSelected ? AppConstants.Colors.navyPrimary : AppConstants.Colors.navyUnselected)
+            .foregroundColor(isSelected ? .white : AppConstants.Colors.navyPrimary)
             .cornerRadius(12)
         }
     }
@@ -217,8 +217,8 @@ struct PriceRangeButton: View {
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(isSelected ? Color(red: 0.1, green: 0.2, blue: 0.4) : Color(red: 0.95, green: 0.97, blue: 1.0))
-                .foregroundColor(isSelected ? .white : Color(red: 0.1, green: 0.2, blue: 0.4))
+                .background(isSelected ? AppConstants.Colors.navyPrimary : AppConstants.Colors.navyUnselected)
+                .foregroundColor(isSelected ? .white : AppConstants.Colors.navyPrimary)
                 .cornerRadius(8)
         }
     }
