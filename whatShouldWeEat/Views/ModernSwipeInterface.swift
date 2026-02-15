@@ -4,10 +4,10 @@ import CoreGraphics
 
 struct ModernSwipeInterface: View {
     let restaurants: [Restaurant]
+    @Binding var currentIndex: Int
     let onSwipe: (Restaurant, SwipeDirection) -> Void
+    let onUndo: ((Restaurant) -> Void)?
     let onComplete: () -> Void
-    
-    @State private var currentIndex = 0
     @State private var isAnimating = false
     @State private var dragOffset = CGSize.zero
     @State private var isDragging = false
@@ -285,6 +285,9 @@ struct ModernSwipeInterface: View {
     private func undoLastSwipe() {
         guard currentIndex > 0 else { return }
         currentIndex -= 1
+        if let restaurant = currentRestaurant {
+            onUndo?(restaurant)
+        }
     }
     
     private func checkCompletion() {
@@ -360,7 +363,9 @@ enum SwipeDirection {
                 distance: 2.5
             )
         ],
+        currentIndex: .constant(0),
         onSwipe: { _, _ in },
+        onUndo: nil,
         onComplete: {}
     )
 } 

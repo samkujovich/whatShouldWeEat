@@ -118,7 +118,7 @@ struct AppUtilities {
 
 // MARK: - Constants
 struct AppConstants {
-    static let defaultSearchRadius: Double = 20.0 // miles
+    static let defaultSearchRadius: Double = AppConfig.defaultMaxDistance // miles
     static let maxSearchRadius: Double = 50.0 // miles
     static let minSearchRadius: Double = 1.0 // miles
     
@@ -135,6 +135,11 @@ struct AppConstants {
         static let secondary = Color.secondary
         static let background = Color(.systemBackground)
         static let cardBackground = Color(.secondarySystemBackground)
+        static let navyBackground = Color(red: 0.05, green: 0.1, blue: 0.2)
+        static let navyPrimary = Color(red: 0.1, green: 0.2, blue: 0.4)
+        static let navyCard = Color(red: 0.1, green: 0.15, blue: 0.3)
+        static let navyButton = Color(red: 0.15, green: 0.2, blue: 0.4)
+        static let navyHighlight = Color(red: 0.2, green: 0.3, blue: 0.6)
     }
     
     struct Spacing {

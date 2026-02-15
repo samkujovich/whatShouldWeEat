@@ -6,7 +6,11 @@ class MockRestaurantService: RestaurantServiceProtocol {
     @Published var restaurants: [Restaurant] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
+
+    var restaurantsPublisher: Published<[Restaurant]>.Publisher { $restaurants }
+    var isLoadingPublisher: Published<Bool>.Publisher { $isLoading }
+    var errorMessagePublisher: Published<String?>.Publisher { $errorMessage }
+
     private var cancellables = Set<AnyCancellable>()
     
     func fetchRestaurants(near location: CLLocationCoordinate2D, radius: Double, excludedCuisines: [String] = []) {

@@ -2,7 +2,7 @@ import SwiftUI
 import CoreLocation
 
 struct RestaurantSwipeView: View {
-    @StateObject private var viewModel = RestaurantViewModel()
+    @StateObject private var viewModel = RestaurantViewModel(restaurantService: RestaurantService())
     @State private var showingResults = false
     
     let preferences: MealPreferences
@@ -57,13 +57,14 @@ struct RestaurantSwipeView: View {
             } else {
                 ModernSwipeInterface(
                     restaurants: viewModel.restaurants,
+                    currentIndex: $viewModel.currentRestaurantIndex,
                     onSwipe: { restaurant, direction in
-                        switch direction {
-                        case .left:
-                            viewModel.swipeLeft()
-                        case .right:
-                            viewModel.swipeRight()
+                        if direction == .right {
+                            viewModel.likedRestaurants.append(restaurant)
                         }
+                    },
+                    onUndo: { restaurant in
+                        viewModel.likedRestaurants.removeAll { $0.id == restaurant.id }
                     },
                     onComplete: {
                         viewModel.hasFinishedSwiping = true

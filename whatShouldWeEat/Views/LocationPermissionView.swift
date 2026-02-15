@@ -15,7 +15,7 @@ struct LocationPermissionView: View {
             // Location icon
             Image(systemName: "location.circle.fill")
                 .font(.system(size: 80))
-                .foregroundColor(Color(red: 0.1, green: 0.2, blue: 0.4))
+                .foregroundColor(AppConstants.Colors.navyPrimary)
             
             // Title
             Text("Find Restaurants Near You")
@@ -42,7 +42,7 @@ struct LocationPermissionView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color(red: 0.1, green: 0.2, blue: 0.4))
+                .background(AppConstants.Colors.navyPrimary)
                 .cornerRadius(12)
             }
             .padding(.horizontal)
@@ -97,7 +97,7 @@ struct LocationPermissionView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(zipCode.isEmpty ? Color.gray : Color(red: 0.1, green: 0.2, blue: 0.4))
+                            .background(zipCode.isEmpty ? Color.gray : AppConstants.Colors.navyPrimary)
                             .cornerRadius(8)
                     }
                     .disabled(zipCode.isEmpty)

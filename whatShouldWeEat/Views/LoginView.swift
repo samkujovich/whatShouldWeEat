@@ -10,8 +10,8 @@ struct LoginView: View {
             // Background gradient
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(red: 0.05, green: 0.1, blue: 0.2),
-                    Color(red: 0.1, green: 0.2, blue: 0.4)
+                    AppConstants.Colors.navyBackground,
+                    AppConstants.Colors.navyPrimary
                 ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -63,7 +63,7 @@ struct LoginView: View {
                         .frame(height: 56)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color(red: 0.2, green: 0.3, blue: 0.6))
+                                .fill(AppConstants.Colors.navyHighlight)
                                 .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                         )
                     }

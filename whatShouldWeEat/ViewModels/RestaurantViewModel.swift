@@ -5,7 +5,7 @@ import Combine
 
 // MARK: - Restaurant ViewModel
 @MainActor
-class RestaurantViewModel: ObservableObject {
+class RestaurantViewModel<Service: RestaurantServiceProtocol>: ObservableObject {
     @Published var restaurants: [Restaurant] = []
     @Published var currentRestaurantIndex = 0
     @Published var isLoading = false
@@ -16,36 +16,36 @@ class RestaurantViewModel: ObservableObject {
     @Published var zipCode: String = ""
     @Published var likedRestaurants: [Restaurant] = []
     @Published var hasFinishedSwiping = false
-    
+
     var mealPreferences: MealPreferences?
 
-    private let restaurantService: RestaurantService
+    private let restaurantService: Service
     private let locationService: LocationService
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(
-        restaurantService: RestaurantService = RestaurantService(),
+        restaurantService: Service,
         locationService: LocationService = LocationService()
     ) {
         self.restaurantService = restaurantService
         self.locationService = locationService
         setupBindings()
     }
-    
+
     private func setupBindings() {
-        // Bind restaurant service properties
-        restaurantService.$isLoading
+        // Bind restaurant service properties via protocol publishers
+        restaurantService.isLoadingPublisher
             .sink { [weak self] value in self?.isLoading = value }
             .store(in: &cancellables)
-        
-        restaurantService.$errorMessage
+
+        restaurantService.errorMessagePublisher
             .sink { [weak self] errorMessage in
                 self?.errorMessage = errorMessage
                 self?.showError = errorMessage != nil
             }
             .store(in: &cancellables)
-        
-        restaurantService.$restaurants
+
+        restaurantService.restaurantsPublisher
             .sink { [weak self] value in self?.restaurants = value }
             .store(in: &cancellables)
     }
@@ -95,37 +95,6 @@ class RestaurantViewModel: ObservableObject {
             radius: radiusInMeters, // Now using meters
             excludedCuisines: mealPreferences?.excludedCuisines ?? []
         )
-    }
-    
-    // MARK: - Swipe Handling
-    
-    func swipeRight() {
-        guard currentRestaurantIndex < restaurants.count else { return }
-        
-        let restaurant = restaurants[currentRestaurantIndex]
-
-        // Add to liked restaurants
-        likedRestaurants.append(restaurant)
-        
-        // Move to next restaurant
-        currentRestaurantIndex += 1
-        
-        // Check if we've finished swiping through all restaurants
-        if currentRestaurantIndex >= restaurants.count {
-            hasFinishedSwiping = true
-        }
-    }
-
-    func swipeLeft() {
-        guard currentRestaurantIndex < restaurants.count else { return }
-
-        // Move to next restaurant
-        currentRestaurantIndex += 1
-
-        // Check if we've finished swiping through all restaurants
-        if currentRestaurantIndex >= restaurants.count {
-            hasFinishedSwiping = true
-        }
     }
     
     // MARK: - Helper Methods

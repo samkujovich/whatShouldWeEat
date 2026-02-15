@@ -41,13 +41,6 @@ class LocationService: NSObject, ObservableObject {
         locationManager.stopUpdatingLocation()
     }
 
-    func calculateDistance(from userLocation: CLLocationCoordinate2D, to restaurantLocation: CLLocationCoordinate2D) -> Double {
-        let userCLLocation = CLLocation(latitude: userLocation.latitude, longitude: userLocation.longitude)
-        let restaurantCLLocation = CLLocation(latitude: restaurantLocation.latitude, longitude: restaurantLocation.longitude)
-
-        return userCLLocation.distance(from: restaurantCLLocation) / 1609.34 // Convert meters to miles
-    }
-
     func refreshAuthorizationStatus() {
         let currentStatus = locationManager.authorizationStatus
         authorizationStatus = currentStatus

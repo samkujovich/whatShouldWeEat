@@ -7,10 +7,9 @@ enum AppView: Equatable {
     case loading
     case login
     case welcome
-    case socialMode
-    case invitation
     case preferences
     case swiping
+    case profile
 }
 
 // MARK: - Meal Preferences Model
@@ -22,7 +21,7 @@ struct MealPreferences: Equatable, Codable {
     
     init(
         deliveryMode: DeliveryMode = .dineIn,
-        maxDistance: Double = 20.0,
+        maxDistance: Double = AppConfig.defaultMaxDistance,
         excludedCuisines: [String] = [],
         priceRange: PriceRange? = nil
     ) {
@@ -67,7 +66,7 @@ class AppViewModel: ObservableObject {
     @Published var currentView: AppView = .loading
     @Published var mealPreferences: MealPreferences = MealPreferences()
     @Published var selectedDeliveryMode: DeliveryMode = .dineIn
-    @Published var maxDistance: Double = 5.0
+    @Published var maxDistance: Double = AppConfig.defaultMaxDistance
     @Published var excludedCuisines: Set<String> = []
     @Published var selectedPriceRange: PriceRange? = nil
     @Published var hasCompletedOnboarding = false
@@ -163,14 +162,6 @@ class AppViewModel: ObservableObject {
         currentView = .welcome
     }
     
-    func navigateToSocialMode() {
-        currentView = .socialMode
-    }
-    
-    func navigateToInvitation() {
-        currentView = .invitation
-    }
-    
     func navigateToPreferences() {
         currentView = .preferences
     }
@@ -181,6 +172,10 @@ class AppViewModel: ObservableObject {
     
     func navigateToLogin() {
         currentView = .login
+    }
+
+    func navigateToProfile() {
+        currentView = .profile
     }
     
     // MARK: - Onboarding
@@ -210,20 +205,16 @@ class AppViewModel: ObservableObject {
     
     private func saveUserPreferences() async {
         guard let currentUser = authenticationManager.currentUser else { return }
-        
+
         var updatedUser = currentUser
         updatedUser.preferences = UserPreferences(
             cuisineRestrictions: Array(excludedCuisines),
             defaultDriveRadius: maxDistance,
-            preferredMealTimes: selectedDeliveryMode == .delivery ? ["lunch", "dinner"] : ["lunch", "dinner"]
+            preferredMealTimes: ["lunch", "dinner"]
         )
-        
-        do {
-            // This would need to be implemented in FirestoreService
-            // try await firestoreService.updateUser(updatedUser)
-        } catch {
-            print("Failed to update user preferences: \(error)")
-        }
+
+        // TODO: Implement Firestore persistence
+        // try await firestoreService.updateUser(updatedUser)
     }
     
     // MARK: - Helper Methods
