@@ -81,6 +81,7 @@ struct RestaurantSwipeView: View {
             }
         }
         .task {
+            guard viewModel.restaurants.isEmpty else { return }
             viewModel.mealPreferences = preferences
             await viewModel.setupLocationAndFetchRestaurants()
         }

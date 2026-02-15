@@ -25,28 +25,28 @@ class SocialSessionService: ObservableObject {
         
         // In a real app, this would be saved to a backend service
         // For now, we'll simulate the creation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.currentSession = session
-            self.isLoading = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.currentSession = session
+            self?.isLoading = false
         }
     }
-    
+
     func joinSession(sessionId: String, userId: String, userName: String) {
         isLoading = true
         errorMessage = nil
-        
+
         guard var session = currentSession, session.id == sessionId else {
             errorMessage = "Session not found"
             isLoading = false
             return
         }
-        
+
         let participant = SessionParticipant(userId: userId, name: userName)
         session.participants.append(participant)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.currentSession = session
-            self.isLoading = false
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.currentSession = session
+            self?.isLoading = false
         }
     }
     

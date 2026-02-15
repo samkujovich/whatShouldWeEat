@@ -104,6 +104,7 @@ class RestaurantService: RestaurantServiceProtocol {
                             phoneNumber: restaurant.phoneNumber,
                             website: restaurant.website,
                             rating: restaurant.rating,
+                            userRatingsTotal: restaurant.userRatingsTotal,
                             priceLevel: restaurant.priceLevel,
                             cuisineTypes: restaurant.cuisineTypes,
                             popularDishes: restaurant.popularDishes,
@@ -121,7 +122,7 @@ class RestaurantService: RestaurantServiceProtocol {
     }
 
     func fetchRestaurantDetails(placeId: String) -> AnyPublisher<Restaurant, Error> {
-        let urlString = "\(baseURL)/details/json?place_id=\(placeId)&fields=name,formatted_address,formatted_phone_number,website,rating,price_level,types,photos,opening_hours,geometry&key=\(apiKey)"
+        let urlString = "\(baseURL)/details/json?place_id=\(placeId)&fields=name,formatted_address,formatted_phone_number,website,rating,user_ratings_total,price_level,types,photos,opening_hours,geometry&key=\(apiKey)"
 
         guard let url = URL(string: urlString) else {
             return Fail(error: RestaurantError.invalidURL)
