@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isParticipant(sessionData) {
+      return isSignedIn() && request.auth.uid in sessionData.participants;
+    }
+    
+    function isSessionCreator(sessionData) {
+      return isSignedIn() && request.auth.uid == sessionData.createdBy;
+    }
+    
+    function isValidUserData(userData) {
+      return userData.keys().hasAll(['profile', 'preferences', 'stats']) &&
+             userData.profile.keys().hasAll(['uid', 'email', 'displayName', 'createdAt', 'lastLoginAt']) &&
+             userData.preferences.keys().hasAll(['cuisineRestrictions', 'defaultDriveRadius', 'preferredMealTimes']) &&
+             userData.stats.keys().hasAll(['totalMeals', 'totalSwipes', 'favoriteRestaurants']);
+    }
+    
+    function isValidMealSession(sessionData) {
+      return sessionData.keys().hasAll(['createdBy', 'participants', 'status', 'criteria', 'restaurants', 'createdAt']) &&
+             sessionData.status in ['active', 'completed', 'cancelled', 'expired'];
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read and write their own data
+      allow read, write: if isOwner(userId);
+      
+      // Users can read other users' basic profile info for meal sessions
+      allow read: if isSignedIn() && 
+        resource.data.profile.keys().hasAll(['displayName', 'photoURL']);
+      
+      // Validate user data structure
+      allow create: if isOwner(userId) && isValidUserData(resource.data);
+      allow update: if isOwner(userId) && isValidUserData(resource.data);
+    }
+    
+    // Meal sessions collection
+    match /mealSessions/{sessionId} {
+      // Session creators can read and write their sessions
+      allow read, write: if isSessionCreator(resource.data);
+      
+      // Participants can read and update sessions they're part of
+      allow read, update: if isParticipant(resource.data);
+      
+      // Validate session data structure
+      allow create: if isSignedIn() && isValidMealSession(resource.data);
+      allow update: if isParticipant(resource.data) && isValidMealSession(resource.data);
+      
+      // Allow deletion only by session creator
+      allow delete: if isSessionCreator(resource.data);
+      
+      // Nested restaurants subcollection
+      match /restaurants/{restaurantId} {
+        // Session participants can read and write restaurant data
+        allow read, write: if isParticipant(get(/databases/$(database)/documents/mealSessions/$(sessionId)).data);
+        
+        // Nested swipes subcollection
+        match /swipes/{userId} {
+          // Users can read and write their own swipes
+          allow read, write: if isOwner(userId);
+          
+          // Session participants can read all swipes in their session
+          allow read: if isParticipant(get(/databases/$(database)/documents/mealSessions/$(sessionId)).data);
+        }
+      }
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 
