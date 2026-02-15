@@ -17,6 +17,8 @@ class RestaurantViewModel: ObservableObject {
     @Published var likedRestaurants: [Restaurant] = []
     @Published var hasFinishedSwiping = false
     
+    var mealPreferences: MealPreferences?
+
     private let restaurantService: RestaurantService
     private let locationService: LocationService
     private var cancellables = Set<AnyCancellable>()
@@ -28,13 +30,12 @@ class RestaurantViewModel: ObservableObject {
         self.restaurantService = restaurantService
         self.locationService = locationService
         setupBindings()
-        print("🍽️ RestaurantViewModel initialized")
     }
     
     private func setupBindings() {
         // Bind restaurant service properties
         restaurantService.$isLoading
-            .assign(to: \.isLoading, on: self)
+            .sink { [weak self] value in self?.isLoading = value }
             .store(in: &cancellables)
         
         restaurantService.$errorMessage
@@ -45,7 +46,7 @@ class RestaurantViewModel: ObservableObject {
             .store(in: &cancellables)
         
         restaurantService.$restaurants
-            .assign(to: \.restaurants, on: self)
+            .sink { [weak self] value in self?.restaurants = value }
             .store(in: &cancellables)
     }
     
@@ -57,7 +58,7 @@ class RestaurantViewModel: ObservableObject {
             userLocation = location
             await fetchRestaurants(near: location)
         } catch {
-            print("❌ Location error: \(error.localizedDescription)")
+            print("Location error: \(error.localizedDescription)")
             // Don't show error immediately, let user try zip code
             showLocationPermission = true
         }
@@ -84,20 +85,16 @@ class RestaurantViewModel: ObservableObject {
     func fetchRestaurants(near location: CLLocationCoordinate2D) async {
         isLoading = true
         errorMessage = nil
-        
-        do {
-            // Convert miles to meters for Google Places API
-            let radiusInMiles = 20.0
-            let radiusInMeters = radiusInMiles * 1609.34 // Convert miles to meters
-            
-            restaurantService.fetchRestaurants(
-                near: location,
-                radius: radiusInMeters, // Now using meters
-                excludedCuisines: []
-            )
-        } catch {
-            handleError("Failed to fetch restaurants: \(error.localizedDescription)")
-        }
+
+        // Convert miles to meters for Google Places API
+        let radiusInMiles = mealPreferences?.maxDistance ?? 20.0
+        let radiusInMeters = radiusInMiles * 1609.34 // Convert miles to meters
+
+        restaurantService.fetchRestaurants(
+            near: location,
+            radius: radiusInMeters, // Now using meters
+            excludedCuisines: mealPreferences?.excludedCuisines ?? []
+        )
     }
     
     // MARK: - Swipe Handling
@@ -106,8 +103,7 @@ class RestaurantViewModel: ObservableObject {
         guard currentRestaurantIndex < restaurants.count else { return }
         
         let restaurant = restaurants[currentRestaurantIndex]
-        print("👍 Liked restaurant: \(restaurant.name)")
-        
+
         // Add to liked restaurants
         likedRestaurants.append(restaurant)
         
@@ -117,23 +113,18 @@ class RestaurantViewModel: ObservableObject {
         // Check if we've finished swiping through all restaurants
         if currentRestaurantIndex >= restaurants.count {
             hasFinishedSwiping = true
-            print("🎉 Finished swiping through all restaurants!")
         }
     }
-    
+
     func swipeLeft() {
         guard currentRestaurantIndex < restaurants.count else { return }
-        
-        let restaurant = restaurants[currentRestaurantIndex]
-        print("👎 Disliked restaurant: \(restaurant.name)")
-        
+
         // Move to next restaurant
         currentRestaurantIndex += 1
-        
+
         // Check if we've finished swiping through all restaurants
         if currentRestaurantIndex >= restaurants.count {
             hasFinishedSwiping = true
-            print("🎉 Finished swiping through all restaurants!")
         }
     }
     

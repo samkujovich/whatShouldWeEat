@@ -36,11 +36,15 @@ class FirestoreService: ObservableObject {
     
     init() {
         self.db = FirebaseConfig.shared.getFirestore()
-        print("📊 Firestore service initialized")
     }
     
     deinit {
-        // Remove listeners synchronously in deinit
+        // Note: In a @MainActor class, deinit is nonisolated, so accessing
+        // `listeners` here is technically a concurrency violation in strict
+        // Swift 6 checking. However, Firestore's ListenerRegistration.remove()
+        // is thread-safe, and at deallocation time no other references exist,
+        // so this is safe in practice. Callers should prefer calling
+        // removeAllListeners() explicitly before releasing this service.
         for (_, listener) in listeners {
             listener.remove()
         }
@@ -53,9 +57,8 @@ class FirestoreService: ObservableObject {
         do {
             let data = try encodeUser(user)
             try await db.collection("users").document(user.id).setData(data)
-            print("✅ User created successfully: \(user.profile.displayName)")
         } catch {
-            print("❌ Failed to create user: \(error)")
+            print("Failed to create user: \(error)")
             throw FirestoreError.encodingError
         }
     }
@@ -66,14 +69,12 @@ class FirestoreService: ObservableObject {
             
             if document.exists {
                 let user = try decodeUser(from: document.data() ?? [:])
-                print("✅ User retrieved: \(user.profile.displayName)")
                 return user
             } else {
-                print("📄 User document not found: \(userId)")
                 return nil
             }
         } catch {
-            print("❌ Failed to get user: \(error)")
+            print("Failed to get user: \(error)")
             throw FirestoreError.decodingError
         }
     }
@@ -82,9 +83,8 @@ class FirestoreService: ObservableObject {
         do {
             let data = try encodeUser(user)
             try await db.collection("users").document(user.id).setData(data, merge: true)
-            print("✅ User updated successfully: \(user.profile.displayName)")
         } catch {
-            print("❌ Failed to update user: \(error)")
+            print("Failed to update user: \(error)")
             throw FirestoreError.encodingError
         }
     }
@@ -92,9 +92,8 @@ class FirestoreService: ObservableObject {
     func deleteUser(userId: String) async throws {
         do {
             try await db.collection("users").document(userId).delete()
-            print("✅ User deleted successfully: \(userId)")
         } catch {
-            print("❌ Failed to delete user: \(error)")
+            print("Failed to delete user: \(error)")
             throw FirestoreError.unknownError(error.localizedDescription)
         }
     }
@@ -105,9 +104,8 @@ class FirestoreService: ObservableObject {
         do {
             let data = try encodeMealSession(session)
             try await db.collection("mealSessions").document(session.id).setData(data)
-            print("✅ Meal session created successfully: \(session.id)")
         } catch {
-            print("❌ Failed to create meal session: \(error)")
+            print("Failed to create meal session: \(error)")
             throw FirestoreError.encodingError
         }
     }
@@ -118,14 +116,12 @@ class FirestoreService: ObservableObject {
             
             if document.exists {
                 let session = try decodeMealSession(from: document.data() ?? [:])
-                print("✅ Meal session retrieved: \(session.id)")
                 return session
             } else {
-                print("📄 Meal session document not found: \(sessionId)")
                 return nil
             }
         } catch {
-            print("❌ Failed to get meal session: \(error)")
+            print("Failed to get meal session: \(error)")
             throw FirestoreError.decodingError
         }
     }
@@ -134,9 +130,8 @@ class FirestoreService: ObservableObject {
         do {
             let data = try encodeMealSession(session)
             try await db.collection("mealSessions").document(session.id).setData(data, merge: true)
-            print("✅ Meal session updated successfully: \(session.id)")
         } catch {
-            print("❌ Failed to update meal session: \(error)")
+            print("Failed to update meal session: \(error)")
             throw FirestoreError.encodingError
         }
     }
@@ -144,9 +139,8 @@ class FirestoreService: ObservableObject {
     func deleteMealSession(sessionId: String) async throws {
         do {
             try await db.collection("mealSessions").document(sessionId).delete()
-            print("✅ Meal session deleted successfully: \(sessionId)")
         } catch {
-            print("❌ Failed to delete meal session: \(error)")
+            print("Failed to delete meal session: \(error)")
             throw FirestoreError.unknownError(error.localizedDescription)
         }
     }
@@ -157,13 +151,12 @@ class FirestoreService: ObservableObject {
         let listener = db.collection("mealSessions").document(sessionId)
             .addSnapshotListener { [weak self] documentSnapshot, error in
                 if let error = error {
-                    print("❌ Meal session listener error: \(error)")
+                    print("Meal session listener error: \(error)")
                     completion(nil)
                     return
                 }
                 
                 guard let document = documentSnapshot, document.exists else {
-                    print("📄 Meal session document not found: \(sessionId)")
                     completion(nil)
                     return
                 }
@@ -172,7 +165,7 @@ class FirestoreService: ObservableObject {
                     let session = try self?.decodeMealSession(from: document.data() ?? [:])
                     completion(session)
                 } catch {
-                    print("❌ Failed to decode meal session: \(error)")
+                    print("Failed to decode meal session: \(error)")
                     completion(nil)
                 }
             }
@@ -187,7 +180,7 @@ class FirestoreService: ObservableObject {
             .whereField("status", isEqualTo: SessionStatus.active.rawValue)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 if let error = error {
-                    print("❌ User sessions listener error: \(error)")
+                    print("User sessions listener error: \(error)")
                     completion([])
                     return
                 }
@@ -210,7 +203,7 @@ class FirestoreService: ObservableObject {
     
     // MARK: - Helper Methods
     
-    private func removeAllListeners() {
+    func removeAllListeners() {
         for (_, listener) in listeners {
             listener.remove()
         }

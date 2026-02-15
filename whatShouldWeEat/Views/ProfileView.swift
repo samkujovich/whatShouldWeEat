@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var authManager = AuthenticationManager()
+    @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingSignOutAlert = false
     @State private var showingEditProfile = false
     
@@ -352,4 +352,5 @@ struct NavigationBarModifier: ViewModifier {
 
 #Preview {
     ProfileView()
+        .environmentObject(AuthenticationManager())
 } 

@@ -31,8 +31,6 @@ class FirebaseConfig {
         }
 
         GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientId)
-
-        print("Firebase and Google Sign-In configured successfully")
     }
 
     func getFirestore() -> Firestore {

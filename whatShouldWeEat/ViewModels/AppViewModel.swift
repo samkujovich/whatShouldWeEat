@@ -70,17 +70,22 @@ class AppViewModel: ObservableObject {
     @Published var maxDistance: Double = 5.0
     @Published var excludedCuisines: Set<String> = []
     @Published var selectedPriceRange: PriceRange? = nil
+    @Published var hasCompletedOnboarding = false
     
     private let authenticationManager: AuthenticationManager
     private var cancellables = Set<AnyCancellable>()
     
     init(authenticationManager: AuthenticationManager) {
         self.authenticationManager = authenticationManager
-        print("📱 AppViewModel initialized with authenticationManager")
-        
+
+        // Load onboarding state from UserDefaults for the current user
+        if let userId = authenticationManager.currentUser?.id {
+            self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding_\(userId)")
+        }
+
         // Set initial view based on current authentication state
         updateCurrentView(isAuthenticated: authenticationManager.isAuthenticated)
-        
+
         // Setup bindings to observe state changes
         setupBindings()
     }
@@ -116,49 +121,40 @@ class AppViewModel: ObservableObject {
             .sink { [weak self] showError in
                 if showError {
                     // Handle error display if needed
-                    print("❌ Authentication error: \(self?.authenticationManager.errorMessage ?? "Unknown error")")
                 }
             }
             .store(in: &cancellables)
     }
     
     private func updateCurrentView(isAuthenticated: Bool) {
-        print("🔄 AppViewModel.updateCurrentView called - isAuthenticated: \(isAuthenticated)")
-        
         if isAuthenticated {
             if let currentUser = authenticationManager.currentUser {
-                print("👤 User is authenticated with profile: \(currentUser.profile.displayName)")
-                // User is authenticated, check if they have preferences set
-                if currentUser.preferences.cuisineRestrictions.isEmpty && 
-                   currentUser.preferences.defaultDriveRadius == 15.0 {
-                    // New user, show preferences setup
-                    print("🆕 New user detected, navigating to preferences")
+                // Load onboarding flag for this user from UserDefaults
+                let storedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding_\(currentUser.id)")
+                hasCompletedOnboarding = storedOnboarding
+
+                if !hasCompletedOnboarding {
+                    // New user or hasn't finished onboarding
                     currentView = .preferences
                 } else {
-                    // Existing user, show welcome
-                    print("👋 Existing user detected, navigating to welcome")
+                    // Returning user
                     currentView = .welcome
                 }
             } else {
                 // User authenticated but no profile loaded yet
-                print("⏳ User authenticated but profile not loaded yet, staying on loading")
                 currentView = .loading
-                
+
                 // Add a small delay to allow profile to load
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
                     if let self = self, self.authenticationManager.isAuthenticated {
-                        print("🔄 Retrying view update after delay")
                         self.updateCurrentView(isAuthenticated: true)
                     }
                 }
             }
         } else {
             // User not authenticated
-            print("🚪 User not authenticated, navigating to login")
             currentView = .login
         }
-        
-        print("📱 Current view set to: \(currentView)")
     }
     
     // MARK: - Navigation Methods
@@ -187,8 +183,17 @@ class AppViewModel: ObservableObject {
         currentView = .login
     }
     
+    // MARK: - Onboarding
+
+    func completeOnboarding() {
+        hasCompletedOnboarding = true
+        if let userId = authenticationManager.currentUser?.id {
+            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding_\(userId)")
+        }
+    }
+
     // MARK: - Preferences Management
-    
+
     func updatePreferences() {
         mealPreferences = MealPreferences(
             deliveryMode: selectedDeliveryMode,
@@ -216,9 +221,8 @@ class AppViewModel: ObservableObject {
         do {
             // This would need to be implemented in FirestoreService
             // try await firestoreService.updateUser(updatedUser)
-            print("✅ User preferences updated")
         } catch {
-            print("❌ Failed to update user preferences: \(error)")
+            print("Failed to update user preferences: \(error)")
         }
     }
     

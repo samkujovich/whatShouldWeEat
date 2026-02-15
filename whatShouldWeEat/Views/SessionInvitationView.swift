@@ -228,15 +228,6 @@ struct SessionInvitationView: View {
             isLoading = false
             
             // In a real app, this would actually send the invitation
-            switch inviteMethod {
-            case .phone:
-                print("📱 Sending SMS invitation to: \(phoneNumber)")
-            case .email:
-                print("📧 Sending email invitation to: \(email)")
-            case .link:
-                break
-            }
-            
             onInviteSent()
         }
     }
