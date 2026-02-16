@@ -52,8 +52,8 @@ class RestaurantService: RestaurantServiceProtocol {
                             }
                         }
 
-                        // Filter to only show open restaurants
-                        let isOpen = restaurant.openingHours?.openNow ?? false
+                        // Include restaurant if open or if opening hours data is unavailable
+                        let isOpen = restaurant.openingHours?.openNow ?? true
 
                         // More nuanced restaurant filtering
                         let hasRestaurantType = restaurant.cuisineTypes.contains { cuisineType in

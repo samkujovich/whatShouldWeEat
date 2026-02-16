@@ -70,21 +70,14 @@ class LocationService: NSObject, ObservableObject {
     }
 
     func getCoordinatesFromZipCode(_ zipCode: String) async throws -> CLLocationCoordinate2D {
-        let urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(zipCode)&key=\(AppConfig.googlePlacesAPIKey)"
+        let geocoder = CLGeocoder()
 
-        guard let url = URL(string: urlString) else {
-            throw LocationError.invalidURL
-        }
-
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let response = try JSONDecoder().decode(GeocodingResponse.self, from: data)
-
-        guard let result = response.results.first,
-              let location = result.geometry.location else {
+        guard let placemarks = try? await geocoder.geocodeAddressString(zipCode),
+              let location = placemarks.first?.location else {
             throw LocationError.noResults
         }
 
-        return CLLocationCoordinate2D(latitude: location.lat, longitude: location.lng)
+        return location.coordinate
     }
 
     // MARK: - Private Properties
@@ -142,7 +135,6 @@ extension LocationService: CLLocationManagerDelegate {
 
 enum LocationError: Error, LocalizedError {
     case timeout
-    case invalidURL
     case noResults
     case permissionDenied
 
@@ -150,32 +142,11 @@ enum LocationError: Error, LocalizedError {
         switch self {
         case .timeout:
             return "Location request timed out"
-        case .invalidURL:
-            return "Invalid URL"
         case .noResults:
-            return "No location found for the provided address"
+            return "No location found for the provided zip code"
         case .permissionDenied:
             return "Location permission denied"
         }
     }
 }
 
-// MARK: - Geocoding Response Models
-
-struct GeocodingResponse: Codable {
-    let results: [GeocodingResult]
-    let status: String
-}
-
-struct GeocodingResult: Codable {
-    let geometry: Geometry
-}
-
-struct Geometry: Codable {
-    let location: Location?
-}
-
-struct Location: Codable {
-    let lat: Double
-    let lng: Double
-}

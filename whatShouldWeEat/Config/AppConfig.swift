@@ -3,6 +3,9 @@ import Foundation
 struct AppConfig {
     // Set to true to use mock data, false to use real Google Places API
     static let useMockData = false
+
+    // Set to true to skip Google Sign-In and use a mock user (for simulator testing)
+    static let skipAuth = true
     
     // Google Places API Configuration
     static let googlePlacesAPIKey = Secrets.googlePlacesAPIKey

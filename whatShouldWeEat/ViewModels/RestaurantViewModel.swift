@@ -8,7 +8,7 @@ import Combine
 class RestaurantViewModel<Service: RestaurantServiceProtocol>: ObservableObject {
     @Published var restaurants: [Restaurant] = []
     @Published var currentRestaurantIndex = 0
-    @Published var isLoading = false
+    @Published var isLoading = true
     @Published var errorMessage: String?
     @Published var showError = false
     @Published var showLocationPermission = false
@@ -60,6 +60,7 @@ class RestaurantViewModel<Service: RestaurantServiceProtocol>: ObservableObject 
         } catch {
             print("Location error: \(error.localizedDescription)")
             // Don't show error immediately, let user try zip code
+            isLoading = false
             showLocationPermission = true
         }
     }

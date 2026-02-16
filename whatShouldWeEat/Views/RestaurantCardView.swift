@@ -42,7 +42,8 @@ struct RestaurantCardView: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: .infinity, height: 256) // Constrain width to container
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 256)
                     .clipped()
             } else {
                 Rectangle()
