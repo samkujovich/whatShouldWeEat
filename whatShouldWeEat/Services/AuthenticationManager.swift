@@ -45,7 +45,18 @@ class AuthenticationManager: ObservableObject {
 
     init(firestoreService: FirestoreService? = nil) {
         self.firestoreService = firestoreService ?? FirestoreService()
-        setupAuthStateListener()
+
+        if AppConfig.skipAuth {
+            let mockProfile = UserProfile(
+                uid: "mock-user-001",
+                email: "test@example.com",
+                displayName: "Test User"
+            )
+            self.currentUser = User(id: "mock-user-001", profile: mockProfile)
+            self.isAuthenticated = true
+        } else {
+            setupAuthStateListener()
+        }
     }
 
     // MARK: - Auth State Management
@@ -141,8 +152,10 @@ class AuthenticationManager: ObservableObject {
 
             await handleUserSignIn(authResult.user)
 
+        } catch let error as GIDSignInError where error.code == .canceled {
+            // User dismissed the sign-in sheet — not an error
+            isLoading = false
         } catch {
-            print("Google Sign-In failed: \(error)")
             errorMessage = error.localizedDescription
             showError = true
             isLoading = false

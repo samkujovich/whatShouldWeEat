@@ -17,5 +17,7 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>480189775377-lsf1d1nj5l6pl44nt21e3huf39b8jqhc.apps.googleusercontent.com</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to find nearby restaurants in your area.</string>
 </dict>
 </plist>

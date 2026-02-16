@@ -109,8 +109,11 @@ class AppViewModel: ObservableObject {
         // Monitor loading state
         authenticationManager.$isLoading
             .sink { [weak self] isLoading in
+                guard let self = self else { return }
                 if isLoading {
-                    self?.currentView = .loading
+                    self.currentView = .loading
+                } else if !self.authenticationManager.isAuthenticated {
+                    self.currentView = .login
                 }
             }
             .store(in: &cancellables)
@@ -192,7 +195,7 @@ class AppViewModel: ObservableObject {
     func updatePreferences() {
         mealPreferences = MealPreferences(
             deliveryMode: selectedDeliveryMode,
-            maxDistance: selectedDeliveryMode == .delivery ? 0.0 : maxDistance,
+            maxDistance: maxDistance,
             excludedCuisines: Array(excludedCuisines),
             priceRange: selectedPriceRange
         )
